@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,6 +11,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && localStorage.getItem("loggedIn") === "true") {
+      router.replace("/");
+    }
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +27,8 @@ export default function LoginPage() {
     setTimeout(() => {
       setLoading(false);
       if (email === "test@example.com" && password === "password") {
-        alert("Login successful!");
+        localStorage.setItem("loggedIn", "true");
+        router.replace("/");
       } else {
         setError("Invalid email or password");
       }
