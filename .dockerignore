@@ -4,6 +4,4 @@ node_modules
 .gitignore
 Dockerfile
 README.md
-pnpm-lock.yaml
-bun.lock
 *.log

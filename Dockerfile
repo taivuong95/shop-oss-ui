@@ -1,20 +1,19 @@
-# Use Bun official image
-FROM oven/bun:1.1.13-alpine AS builder
-
+# Install dependencies only when needed
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy only the necessary files first for better caching
-COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+# Copy only the dependency files first for better cache
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
 # Copy the rest of your app
 COPY . .
 
 # Build your Next.js app
-RUN bun run build
+RUN yarn build
 
 # Production image
-FROM oven/bun:1.1.13-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -27,4 +26,4 @@ COPY --from=builder /app/package.json ./package.json
 
 EXPOSE 3000
 
-CMD ["bun", "run", "start"]
+CMD ["yarn", "start"]
