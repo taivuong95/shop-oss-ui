@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.gitignore
+Dockerfile
+README.md
+pnpm-lock.yaml
+bun.lock
+*.log
