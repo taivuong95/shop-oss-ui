@@ -1,23 +1,25 @@
-# Install dependencies only when needed
-FROM node:20-alpine AS deps
-WORKDIR /app
-COPY package.json pnpm-lock.yaml* bun.lock* ./
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
+# Use Bun official image
+FROM oven/bun:1.1.13-alpine AS builder
 
-# Rebuild the source code only when needed
-FROM node:20-alpine AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+
+# Copy only the necessary files first for better caching
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
+
+# Copy the rest of your app
 COPY . .
-RUN pnpm build
 
-# Production image, copy all the files and run next
-FROM node:20-alpine AS runner
+# Build your Next.js app
+RUN bun run build
+
+# Production image
+FROM oven/bun:1.1.13-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Copy built assets and node_modules
+# Copy built assets and dependencies from builder
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
@@ -25,4 +27,4 @@ COPY --from=builder /app/package.json ./package.json
 
 EXPOSE 3000
 
-CMD ["pnpm", "start"]
+CMD ["bun", "run", "start"]
