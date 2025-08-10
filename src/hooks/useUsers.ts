@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api';
+// import { apiClient } from '@/lib/api';
 
 // Types
 export interface User {
@@ -133,6 +133,7 @@ const usersApi = {
   },
 
   deleteUser: async (id: string): Promise<void> => {
+    console.log('id',id)
     // Simulate API call
     return new Promise((resolve) => {
       setTimeout(() => {
