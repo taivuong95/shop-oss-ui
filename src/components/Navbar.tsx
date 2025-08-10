@@ -17,10 +17,35 @@ import {
   SidebarTrigger, 
   // useSidebar 
 } from "./ui/sidebar";
+import { useLogout, useCurrentUser } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const { setTheme } = useTheme();
+  const { data: user } = useCurrentUser();
+  const logoutMutation = useLogout();
+  const router = useRouter();
   // const { toggleSidebar } = useSidebar();
+
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  const getUserInitials = (name = "Fallback User") => {
+    console.log('Name', name)
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <nav className="p-4 flex items-center justify-between sticky top-0 bg-background z-10">
       {/* LEFT */}
@@ -57,11 +82,15 @@ const Navbar = () => {
           <DropdownMenuTrigger>
             <Avatar>
               <AvatarImage src="https://avatars.githubusercontent.com/u/1486366" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarFallback>
+                {user ? getUserInitials(user.name) : "U"}
+              </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={10}>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              {user ? user.name : "User"}
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <User className="h-[1.2rem] w-[1.2rem] mr-2" />
@@ -71,9 +100,13 @@ const Navbar = () => {
               <Settings className="h-[1.2rem] w-[1.2rem] mr-2" />
               Settings
             </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive">
+            <DropdownMenuItem 
+              variant="destructive"
+              onClick={handleLogout}
+              disabled={logoutMutation.isPending}
+            >
               <LogOut className="h-[1.2rem] w-[1.2rem] mr-2" />
-              Logout
+              {logoutMutation.isPending ? "Logging out..." : "Logout"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

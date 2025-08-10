@@ -3,6 +3,7 @@ import AppBarChart from "@/components/AppBarChart";
 import AppPieChart from "@/components/AppPieChart";
 import CardList from "@/components/CardList";
 import TodoList from "@/components/TodoList";
+import UsersList from "@/components/UsersList";
 
 const Homepage = () => {
   return (
@@ -22,6 +23,9 @@ const Homepage = () => {
       </div>
       <div className="bg-primary-foreground p-4 rounded-lg">
         <CardList title="Popular Content" />
+      </div>
+      <div className="bg-primary-foreground p-4 rounded-lg lg:col-span-2">
+        <UsersList />
       </div>
     </div>
   );
